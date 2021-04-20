@@ -1,0 +1,45 @@
+---
+# This playbook is to perform MySQL installations.
+
+- name: Install MySQL Software Repo
+  remote_user: ansible
+  become: true
+  yum:
+    name: http://repo.mysql.com/mysql57-community-release-el7-10.noarch.rpm
+    state: present
+    disable_gpg_check: yes
+
+- name: Install MySQL Database
+  remote_user: ansible
+  become: true
+  yum: name=mysql-server state=present disable_gpg_check=yes
+  
+- name: Start & Enable MySQL Server to start on boot
+  remote_user: ansible
+  become: true
+  service: name=mysqld state=started enabled=yes
+
+- shell: grep 'temporary password' /var/log/mysqld.log | awk '{print $NF}';
+  register: result
+-  set_fact:
+    mysql_root_pw: "{{ result.stdout }}"
+
+- stat: path=/root/.my.cnf
+  remote_user: ansible
+  become: true
+  register: sym
+
+- set_fact: mysql_root_pw="{{ masterpassword }}"
+  when: sym.stat.exists == True
+
+- name: install .my.cnf with credentials
+  remote_user: ansible
+  become: true
+  template: src=my.cnf.j2 dest=/root/.my.cnf
+            mode=0400
+  tags: my_cnf
+ 
+-  set_fact:
+    mysql_root_pw: "{{ masterpassword }}"
+
+

@@ -1,0 +1,13 @@
+---
+# This playbook is to perform common tasks. CST4715
+
+- name: Install Python
+  remote_user: ansible
+  become: true
+  yum: name=python3  state=present
+
+- name: Install Firewalld
+  remote_user: ansible
+  become: true
+  yum: name=firewalld  state=present
+

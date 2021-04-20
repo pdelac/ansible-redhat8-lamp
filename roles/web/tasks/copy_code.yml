@@ -1,0 +1,24 @@
+---
+# These tasks are responsible for copying the latest dev/production code from
+# the version control system.
+
+- name: Copy the code from repository
+  remote_user: ansible
+  become: true
+  git: repo={{ repository }} dest=/var/www/html/ force=yes
+
+- name: Creates the index.php file
+  remote_user: ansible
+  become: true
+  template: src=index.php.j2 dest=/var/www/html/index.php
+  
+- name: Delete index.html if exists
+  remote_user: ansible
+  become: true
+  file: path=/var/www/html/index.html state=absent
+
+- name: Creates the phpinfo.php file
+  remote_user: ansible
+  become: true
+  template: src=phpinfo.php.j2 dest=/var/www/html/phpinfo.php
+

@@ -1,0 +1,34 @@
+---
+# Playbook for Web Server
+
+- name: Install httpd 
+  remote_user: ansible
+  become: true
+  yum: name=httpd  state=present
+
+- name: Install php 
+  remote_user: ansible
+  become: true
+  yum: name=php  state=present
+
+- name: Install php-mysqlnd
+  remote_user: ansible
+  become: true
+  yum: name=php-mysqlnd  state=present
+
+- name: Start & Enable Apache Server to start on boot
+  remote_user: ansible
+  become: true
+  service: name=httpd state=started enabled=yes
+
+- name: Enable the firewall port for Apache
+  remote_user: ansible
+  become: true
+  firewalld: port=80/tcp permanent=true state=enabled immediate=yes
+    
+- name: Install git
+  remote_user: ansible
+  become: true
+  yum: name=git  state=present
+
+- include: copy_code.yml
